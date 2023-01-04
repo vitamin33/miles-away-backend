@@ -1,0 +1,19 @@
+{
+  "name": "get-profile",
+  "version": "1.0.0",
+  "description": "Get profile from DB NodeJS",
+  "main": "app.js",
+  "repository": "https://github.com/awslabs/aws-sam-cli/tree/develop/samcli/local/init/templates/cookiecutter-aws-sam-hello-nodejs",
+  "author": "futuristic_cowboy",
+  "license": "MIT",
+  "dependencies": {
+    "axios": ">=0.21.1"
+  },
+  "scripts": {
+    "test": "mocha tests/unit/"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.1.0"
+  }
+}
