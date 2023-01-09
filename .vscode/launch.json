@@ -5,7 +5,7 @@
             "request": "direct-invoke",
             "invokeTarget": {
                 "target": "template",
-                "logicalId": "HelloWorldFunction",
+                "logicalId": "CreateUserFunction",
                 "templatePath": "/Users/vitaliiserbyn/Documents/GitHub/miles-away-backend/template.yaml"
             },
             "lambda": {

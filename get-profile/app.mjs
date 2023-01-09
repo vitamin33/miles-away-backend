@@ -1,27 +1,42 @@
-/**
- *
- * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} event - API Gateway Lambda Proxy Input Format
- *
- * Context doc: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html 
- * @param {Object} context
- *
- * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
- * 
- */
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb'
+
+const ddbDocClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: 'eu-central-1' }), {
+  marshallOptions: {
+      removeUndefinedValues: true
+  }
+})
+
+// Get the DynamoDB table name from environment variables
+const tableName = process.env.USERS_TABLE;
 
 export const lambdaHandler = async (event, context) => {
-    try {
-
-        return {
-            'statusCode': 200,
-            'body': JSON.stringify({
-                username: 'futuristic_cowboy',
-            })
-        }
-    } catch (err) {
-        console.log(err);
-        return err;
+    if (event.httpMethod !== 'GET') {
+        throw new Error(`getAllItems only accept GET method, you tried: ${event.httpMethod}`);
     }
+    // All log statements are written to CloudWatch
+    console.info('received:', event);
+
+    // get all items from the table (only first 1MB data, you can use `LastEvaluatedKey` to get the rest of data)
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#scan-property
+    // https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Scan.html
+    var params = {
+        TableName : tableName
+    };
+
+    try {
+        const data = await ddbDocClient.send(new ScanCommand(params));
+        var items = data.Items;
+    } catch (err) {
+        console.log("Error", err);
+    }
+
+    const response = {
+        statusCode: 200,
+        body: JSON.stringify(items)
+    };
+
+    // All log statements are written to CloudWatch
+    console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
+    return response;
 };
