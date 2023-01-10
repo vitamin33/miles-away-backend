@@ -11,48 +11,6 @@ Globals:
     Timeout: 3
 
 Resources:
-  CreateUserFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: create-user/
-      Handler: app.lambdaHandler
-      Runtime: nodejs18.x
-      Timeout: 10
-      Architectures:
-        - x86_64
-      Policies:
-        # Give Create/Read/Update/Delete Permissions to the MilesAwayUsers
-        - DynamoDBCrudPolicy:
-            TableName: !Ref MilesAwayUsers
-      Environment:
-        Variables:
-          # Make table name accessible as environment variable from function code during execution
-          USERS_TABLE: !Ref MilesAwayUsers
-
-  ProfileFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: get-profile/
-      Handler: app.lambdaHandler
-      Runtime: nodejs18.x
-      Timeout: 10
-      Architectures:
-        - x86_64
-      Policies:
-        # Give Create/Read/Update/Delete Permissions to the MilesAwayUsers
-        - DynamoDBCrudPolicy:
-            TableName: !Ref MilesAwayUsers
-      Environment:
-        Variables:
-          # Make table name accessible as environment variable from function code during execution
-          USERS_TABLE: !Ref MilesAwayUsers
-      Events:
-        Profile:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /profile
-            Method: get
-
   # DynamoDB table to store item: { PublicKey: &lt;PUBLIC_KEY&gt;, Username: &lt;NAME&gt;, PrivateKey: &lt;PRIVATE_KEY&gt;}
   MilesAwayUsers:
     Type: AWS::DynamoDB::Table
@@ -67,6 +25,54 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
+
+  CreateUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: create-user/
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+      Timeout: 10
+      Architectures:
+        - x86_64
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the MilesAwayUsers
+        - DynamoDBCrudPolicy:
+            TableName: MilesAwayUsers
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          USERS_TABLE: MilesAwayUsers
+      Events:
+        CreateUser:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /create/user
+            Method: post
+
+  ProfileFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: get-profile/
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+      Timeout: 10
+      Architectures:
+        - x86_64
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the MilesAwayUsers
+        - DynamoDBCrudPolicy:
+            TableName: MilesAwayUsers
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          USERS_TABLE: MilesAwayUsers
+      Events:
+        Profile:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /profile
+            Method: get
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

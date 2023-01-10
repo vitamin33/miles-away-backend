@@ -20,24 +20,35 @@ exports.lambdaHandler = async (event, context) => {
     // All log statements are written to CloudWatch
     console.info('received:', event);
 
-    const params = {
-        TableName: tableName,
-    };
-
-    const scanResults = [];
-    var items;
-    do{
-        items =  await dynamoClient.scan(params).promise();
-        items.Items.forEach((item) => scanResults.push(item));
-        params.ExclusiveStartKey  = items.LastEvaluatedKey;
-    }while(typeof items.LastEvaluatedKey !== "undefined");
-
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify(scanResults)
-    };
-
-    // All log statements are written to CloudWatch
-    console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
-    return response;
+    return scan();
 };
+
+async function scan(){
+    try {
+        const params = {
+            TableName: tableName,
+        };
+    
+        const scanResults = [];
+        var items;
+        do{
+            items =  await dynamoClient.scan(params).promise();
+            items.Items.forEach((item) => scanResults.push(item));
+            params.ExclusiveStartKey  = items.LastEvaluatedKey;
+        }while(typeof items.LastEvaluatedKey !== "undefined");
+    
+        
+        console.log(scanResults);
+        response = {
+            statusCode: 200,
+            body: JSON.stringify(scanResults)
+        };
+        return response;
+    } catch (error) {
+        response = {
+            statusCode: 500,
+            body: JSON.stringify(error)
+        };
+        return response;
+    }
+}
