@@ -29,6 +29,7 @@ Resources:
   CreateUserFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: CreateUserFunction
       CodeUri: create-user/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
@@ -53,6 +54,7 @@ Resources:
   ProfileFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
+      FunctionName: ProfileFunction
       CodeUri: get-profile/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x

@@ -1,5 +1,5 @@
 {
-    "body": "{\"username\": \"larry_king\"}",
+    "body": "{\"username\": \"futuristic_cowboy\"}",
     "httpMethod": "POST",
     "queryStringParameters": {
       "foo": "bar"
