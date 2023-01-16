@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   miles-away-backend
 
-  Sample SAM Template for miles-away-backend
+  SAM for miles-away-backend
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -11,16 +11,16 @@ Globals:
     Timeout: 3
 
 Resources:
-  # DynamoDB table to store item: { PublicKey: &lt;PUBLIC_KEY&gt;, Username: &lt;NAME&gt;, PrivateKey: &lt;PRIVATE_KEY&gt;}
+  # DynamoDB table to store item: { PublicKey: &lt;PUBLIC_KEY&gt;, Email: &lt;NAME&gt;, PrivateKey: &lt;PRIVATE_KEY&gt;}
   MilesAwayUsers:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: MilesAwayUsers
       AttributeDefinitions:
-        - AttributeName: PublicKey
+        - AttributeName: Email
           AttributeType: S
       KeySchema:
-        - AttributeName: PublicKey
+        - AttributeName: Email
           KeyType: HASH
       ProvisionedThroughput:
         ReadCapacityUnits: 1
