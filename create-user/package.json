@@ -10,6 +10,7 @@
     "@aws-sdk/lib-dynamodb": "^3.245.0",
     "aws-sdk": "^2.1291.0",
     "axios": ">=0.21.1",
+    "ethers": "^5.7.2",
     "uuid": "^9.0.0"
   },
   "scripts": {

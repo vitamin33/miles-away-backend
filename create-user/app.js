@@ -1,5 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const AWS = require('aws-sdk')
+const ethers = require('ethers')
+
 const REGION = 'eu-central-1'
 
 const settings = {
@@ -15,20 +17,28 @@ const tableName = process.env.USERS_TABLE;
 
 exports.lambdaHandler = async (event, context) => {
 
-    // Get id and name from the body of the request
-    const body = JSON.parse(event.body);
-    const username = body.username;
-    const userUUID = uuidv4();
+    if (event.request.userAttributes.email) {
+        // Get email from the Cognito event
+        const email = event.request.userAttributes.email
+        const wallet = ethers.Wallet.createRandom()
 
-    var params = {
-        TableName : tableName,
-        Item: {
-            'PublicKey': userUUID ,
-            'Username': username,
-          }
-    };
-
-    return putItem(params);
+        var params = {
+            TableName : tableName,
+            Item: {
+                'PublicKey': wallet.address ,
+                'Email': email,
+                'PrivateKey': wallet.privateKey
+            }
+        };
+        return putItem(params);
+    } else {
+        // Nothing to do, the user's email ID is unknown
+        response = {
+            statusCode: 400,
+            body: JSON.stringify("User's email is empty. Can't generate Wallet keypair.")
+        };
+        return response;
+    }
 };
 
 const insertToDb = async item => {
