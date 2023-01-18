@@ -9,8 +9,12 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.245.0",
     "@aws-sdk/lib-dynamodb": "^3.245.0",
+    "@moralisweb3/common-evm-utils": "^2.11.1",
     "aws-sdk": "^2.1291.0",
-    "axios": ">=0.21.1"
+    "axios": ">=0.21.1",
+    "bigint-buffer": "^1.1.5",
+    "dotenv": "^16.0.3",
+    "moralis": "^2.11.1"
   },
   "scripts": {
     "test": "mocha tests/unit/"

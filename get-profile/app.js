@@ -1,4 +1,9 @@
 const AWS = require('aws-sdk')
+require('dotenv').config()
+
+const Moralis = require("moralis").default;
+const { EvmChain } = require("@moralisweb3/common-evm-utils");
+
 const REGION = 'eu-central-1'
 
 const settings = {
@@ -9,7 +14,6 @@ if (process.env.AWS_SAM_LOCAL) {
 }
 const dynamoClient = new AWS.DynamoDB.DocumentClient(settings)
 
-
 // Get the DynamoDB table name from environment variables
 const tableName = process.env.USERS_TABLE;
 
@@ -17,34 +21,46 @@ exports.lambdaHandler = async (event, context) => {
     if (event.httpMethod !== 'GET') {
         throw new Error(`getAllItems only accept GET method, you tried: ${event.httpMethod}`);
     }
-    // All log statements are written to CloudWatch
-    console.info('received:', event);
 
-    return scan();
+    await Moralis.start({
+        apiKey: process.env.MORALIS_KEY,
+      });
+
+    const email = event.queryStringParameters.email
+
+    return await getItemByEmail(email);
 };
 
-async function scan(){
+async function getItemByEmail(email){
     try {
         const params = {
-            TableName: tableName,
+            Key: {'Email': email },
+            TableName: tableName
         };
     
-        const scanResults = [];
-        var items;
-        do{
-            items =  await dynamoClient.scan(params).promise();
-            items.Items.forEach((item) => scanResults.push(item));
-            params.ExclusiveStartKey  = items.LastEvaluatedKey;
-        }while(typeof items.LastEvaluatedKey !== "undefined");
-    
-        
-        console.log(scanResults);
+        const item = (await dynamoClient.get(params).promise()).Item
+        //const address = item.PublicKey
+        console.log("NFT contract: ", process.env.NFT_CONTRACT_ADRESS)
+
+        const address = '0x5019682dee09FB5B53cD48BA6458728b85826B87'
+        const chain = EvmChain.MUMBAI;
+        const tokenAddresses = [ process.env.NFT_CONTRACT_ADRESS ]
+
+        const nftResult = await Moralis.EvmApi.nft.getWalletNFTs({
+            address: address,
+            chain: chain,
+            tokenAddresses: tokenAddresses
+        })
+
+        console.info("Nft results: ", nftResult?.result)
+
         response = {
             statusCode: 200,
-            body: JSON.stringify(scanResults)
+            body: JSON.stringify(nftResult)
         };
         return response;
     } catch (error) {
+        console.info("Received error: ", error);
         response = {
             statusCode: 500,
             body: JSON.stringify(error)
