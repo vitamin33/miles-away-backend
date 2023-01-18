@@ -58,7 +58,7 @@ Resources:
       CodeUri: get-profile/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
-      Timeout: 10
+      Timeout: 20
       Architectures:
         - x86_64
       Policies:
@@ -69,6 +69,7 @@ Resources:
         Variables:
           # Make table name accessible as environment variable from function code during execution
           USERS_TABLE: MilesAwayUsers
+          NFT_CONTRACT_ADRESS: '0xb3216a6ac47B075000B744004fD81F6173d242C6'
       Events:
         Profile:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
