@@ -16,7 +16,9 @@ const generateNFT = async (outputPath) => {
     try
     {
         let data = await listDirectory('layers', BUCKET_NAME)
+
         data.Contents?.forEach( async(element) => {
+            console.log('Element: ', element)
             await writeFileToTemp(element.Key, BUCKET_NAME)
         });
 
@@ -127,8 +129,11 @@ const writeFileToTemp = async (key, bucketName) => {
             Key: key,
         };
     
-        const data = await S3.getObject(params).promise();
+        console.log('Start to getting file: ', key)
+        const data = await (S3.getObject(params).promise());
+        console.log('File from S3: ', data)
         const filePath = path.join(layersPath, key)
+
         ensureDirectoryExistence(filePath)
         fs.writeFileSync(filePath, data.Body);
     } catch(err) {
